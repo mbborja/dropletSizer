@@ -2,7 +2,15 @@
 """
 Created on Wed June 22 2022
 
-@author: Marco
+This file reads images outer radius of droplets and detects circles using edge detection + fill holes.
+
+Scientist notes:
+I found that this doesn't really work since the outer edges of the droplets blend with one another since
+they are so close to another
+I also included a way to visualize selected regions and their regionprops data such as area, major & minor
+axes and circumferences
+
+@author: Marco Borja
 """
 import cv2
 import skimage.segmentation
@@ -59,8 +67,6 @@ axes[2].set_title('Filled Edges')
 #     a.axis('off')
 plt.tight_layout()
 plt.show()
-
-#Test Change
 
 fill_edges = fill_edges[5:1195,5:1915]
 final = skimage.segmentation.clear_border(fill_edges)
