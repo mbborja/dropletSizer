@@ -44,42 +44,35 @@ def isContained(x, y, center_x, center_y, radius):
 
 # General File Reading
 for i in range(5):
-
+    # Temperature readings start at 58C and go up to 66C
     temp = 58 + (2*i)
     path = "C:/Users/mborj/Documents/Rogers Lab/20220707-Hysteresis-heating-cleaned/20220707-Hysteresis-heating-cleaned/"
 
+    #Naming Convention ("[Concentration]_[outer/inner]_[temp]C.tif")
     droplets = io.imread(path + "1.5mM_outer_%dC.tif" % temp)
     condensates =  io.imread(path + "1.5mM_inner_%dC.tif" % temp)
+
     #Remove 5 pixels from each image edge
     droplets = droplets[5:1195,5:1915]
     condensates = condensates[5:1195,5:1915]
-    # plt.imshow(condensates)
-    # plt.title("Condensates Temp = " + str(temp))
-    # plt.show()
-    # plt.imshow(droplets)
-    # plt.title("Temp = " + str(temp))
-    # plt.show()
 
+    #Apply a Gaussian Filter of Sigma 3 on inner and outer images
     sig = 3
     gauss = filters.gaussian(droplets, sigma=sig)
     condgauss = filters.gaussian(condensates, sigma = (sig-1))
 
+    #Use a Canny edge detector to detected condensate edges
     edges = feature.canny(condgauss, sigma = 0.2)
     fill_edges = ndi.binary_fill_holes(edges)
     fill_edges = remove_small_objects(fill_edges, min_size = 200)
 
+    #Label each new region of condensate and measure using reginoprops
     cond_label = label(fill_edges)
     props = regionprops_table(cond_label, properties = ('area', 'centroid', 'orientation', 'axis_major_length', 'axis_minor_length'))
     cond_props = pd.DataFrame(props)
-    cond_props.rename(columns={'area': 'droplet area'}, inplace = True)
-    # plt.imshow(edges)
-    # plt.title("Edges")
-    # plt.show()
+    cond_props.rename(columns={'area': 'condensate area'}, inplace = True)
 
-    # plt.imshow(fill_edges)
-    # plt.title("Filled")
-    # plt.show()
-
+    #TODO Add more documentation (starting here)
     fig, axes = plt.subplots(1,2, sharey = True)
     axes[0].imshow(edges)
     axes[1].imshow(condgauss)
@@ -87,10 +80,6 @@ for i in range(5):
     fill_edges = ~fill_edges
     fill_edges = fill_edges
     cond_img = condgauss*fill_edges
-
-    # plt.imshow(cond_img)
-    # plt.title("Condensates Temp = " + str(temp))
-    # plt.show()
 
     param1 = 25
     param2 = 60
@@ -123,10 +112,6 @@ for i in range(5):
         cv.circle(cv_img, (j[0], j[1]), j[2], (0, 255, 0), 2)
         cv.circle(cond_img, (j[0], j[1]), j[2], (0, 255, 0), 2)
 
-    # plt.imshow(cv_img)
-    # plt.title("Temp = %d param1 = %d, param 2 = %d" % (temp, param1, param2))
-    # plt.show()
-#--------------------------- Undo
     fig, axes = plt.subplots(1,2, sharey = True)
     axes[0].imshow(cond_img)
     axes[0].set_title("Condensates Temp = " + str(temp))
@@ -140,16 +125,3 @@ for i in range(5):
     plt.show()
 
     cond_props.to_csv("C:/Users/mborj/Documents/Rogers Lab/20220707-Hysteresis-heating-cleaned/20220707-Hysteresis-heating-cleaned/1.5mM Data CSV/Matched%dC.csv" % temp)
-    #
-    # condparam1 = 20
-    # condparam2 = 60
-    #
-    # cond_img = img_as_ubyte(condgauss)
-    # condensates = cv.HoughCircles(cond_img, cv.HOUGH_GRADIENT, 1, 40, param1=condparam1, param2=condparam2, minRadius=0,                               maxRadius=0)
-    # condresult = np.uint32(np.int32(condensates))
-    # for j in condresult[0,:]:
-    #     cv.circle(cond_img, (j[0], j[1]), j[2], (0, 255, 0), 2)
-    #
-    # plt.imshow(cond_img)
-    # plt.title("Temp = %d param1 = %d, param 2 = %d" % (temp, condparam1, condparam2))
-    # plt.show()
