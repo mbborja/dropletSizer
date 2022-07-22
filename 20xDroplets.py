@@ -60,6 +60,8 @@ axes[2].set_title('Filled Edges')
 plt.tight_layout()
 plt.show()
 
+#Test Change
+
 fill_edges = fill_edges[5:1195,5:1915]
 final = skimage.segmentation.clear_border(fill_edges)
 #
