@@ -2,6 +2,13 @@
 """
 Created on 2022/8/7
 
+This code uses a function of cv2 HoughCircles to determine the outer radii of the droplets.
+
+Scientist notes:
+HoughCircles was much better at finding and segmenting circles since it works even with some
+overlap of the edges. This is a good workspace to play around with its parameters and presenting
+its changes
+
 @author: Marco
 """
 import matplotlib.pyplot as plt

@@ -12,6 +12,7 @@ axes and circumferences
 
 @author: Marco Borja
 """
+
 import cv2
 import skimage.segmentation
 import skimage
