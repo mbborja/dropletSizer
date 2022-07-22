@@ -2,6 +2,19 @@
 """
 Created on 2022/8/7
 
+This file was run on the data from the Hysteresis-heated-cleaning DNA nanostar experiments
+run at high temperatures 58C-66C
+
+Images are divided by inner radii and outer radii
+A HoughCircles algorithm is run to obtain outer radii from the droplets
+A Canny Edge Detection algorithm is run to obtain the inner radii from the condensates
+
+Once these radii are obtained, each condensate is matched with its respective droplet and
+its data will be matched containing each droplet's [inner radius, outer radius, concentration, temp]
+
+Scientist notes:
+Needs a cleanup
+
 @author: Marco
 """
 import matplotlib.pyplot as plt
@@ -28,6 +41,8 @@ def isContained(x, y, center_x, center_y, radius):
         return False
 
 #%%
+
+# General File Reading
 for i in range(5):
 
     temp = 58 + (2*i)
