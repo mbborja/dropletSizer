@@ -30,6 +30,7 @@ import numpy as np
 
 import cv2 as cv
 
+# TODO Write function documentation
 def isContained(x, y, center_x, center_y, radius):
     dx = abs(x - center_x)
     dy = abs(y - center_y)
@@ -39,6 +40,11 @@ def isContained(x, y, center_x, center_y, radius):
         return True
     else:
         return False
+# TODO Write function documentation
+def showFig(figure, title = ""):
+    plt.imshow(figure)
+    plt.title = title
+    plt.show()
 
 #%%
 
@@ -73,10 +79,10 @@ for i in range(5):
     cond_props.rename(columns={'area': 'condensate area'}, inplace = True)
 
     #TODO Add more documentation (starting here)
-    fig, axes = plt.subplots(1,2, sharey = True)
-    axes[0].imshow(edges)
-    axes[1].imshow(condgauss)
-    plt.show()
+    # fig, axes = plt.subplots(1,2, sharey = True)
+    # axes[0].imshow(edges)
+    # axes[1].imshow(condgauss)
+    # plt.show()
     fill_edges = ~fill_edges
     fill_edges = fill_edges
     cond_img = condgauss*fill_edges
