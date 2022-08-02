@@ -19,6 +19,8 @@ Needs a cleanup
 """
 import matplotlib.pyplot as plt
 import pandas as pd
+import math
+from matplotlib_scalebar.scalebar import ScaleBar
 import skimage.filters.thresholding
 from skimage import filters, io, feature, data
 from scipy import ndimage as ndi
@@ -51,12 +53,13 @@ def showFig(figure, title = ""):
 # General File Reading
 for i in range(5):
     # Temperature readings start at 58C and go up to 66C
+    conc = "1.5"
     temp = 58 + (2*i)
     path = "C:/Users/mborj/Documents/Rogers Lab/20220707-Hysteresis-heating-cleaned/20220707-Hysteresis-heating-cleaned/"
 
     #Naming Convention ("[Concentration]_[outer/inner]_[temp]C.tif")
-    droplets = io.imread(path + "1.5mM_outer_%dC.tif" % temp)
-    condensates =  io.imread(path + "1.5mM_inner_%dC.tif" % temp)
+    droplets = io.imread(path + conc + "mM_outer_%dC.tif" % temp)
+    condensates = io.imread(path + conc + "mM_inner_%dC.tif" % temp)
 
     #Remove 5 pixels from each image edge
     droplets = droplets[5:1195,5:1915]
@@ -83,10 +86,9 @@ for i in range(5):
     # axes[0].imshow(edges)
     # axes[1].imshow(condgauss)
     # plt.show()
-    fill_edges = ~fill_edges
-    fill_edges = fill_edges
-    cond_img = condgauss*fill_edges
 
+    fill_edges = ~fill_edges
+    cond_img = condgauss*(fill_edges)
     param1 = 25
     param2 = 60
 
@@ -95,6 +97,8 @@ for i in range(5):
     result = np.uint32(np.int32(circles))
 
     numCond = cond_props.shape[0]
+    test_temp = pd.Series(temp, range(numCond))
+    test_conc = pd.Series(conc, range(numCond))
     droplet_x = pd.Series(float("NaN"), range(numCond))
     droplet_y = pd.Series(float("NaN"), range(numCond))
     droplet_radius = pd.Series(float("NaN"), range(numCond))
@@ -110,24 +114,55 @@ for i in range(5):
                 droplet_y[j] = drop_y
                 droplet_radius[j] = radius
 
+    cond_radius = np.sqrt(cond_props["condensate area"].apply(lambda x: float(x))/math.pi)
+    cond_props['cond-radius'] = cond_radius
     cond_props['droplet-x'] = droplet_x
     cond_props['droplet-y'] = droplet_y
     cond_props['droplet_radius'] = droplet_radius
+    cond_props['temp'] = test_temp
+    cond_props['concentration (mM)'] = test_conc
 
-    for j in result[0, :]:
-        cv.circle(cv_img, (j[0], j[1]), j[2], (0, 255, 0), 2)
-        cv.circle(cond_img, (j[0], j[1]), j[2], (0, 255, 0), 2)
+    # for j in result[0, :]:
+    #     cv.circle(cv_img, (j[0], j[1]), j[2], (0, 255, 0), 2)
+    #     cv.circle(droplets, (j[0], j[1]), j[2], (0, 255, 0), 2)
+    #     cv.circle(condensates, (j[0], j[1]), j[2], (0, 255, 0), 2)
+
+    for index, row in cond_props.iterrows():
+        if row['condensate area'] > 20000:
+            cond_props.drop(index, inplace=True)
+
+    for j, row in cond_props.iterrows():
+        if(not math.isnan(row['droplet_radius'])):
+            cv.putText(condensates, str(j), (int(row['droplet-y']), int(row['droplet-x'])), cv.FONT_HERSHEY_SIMPLEX, 3, (0,0,0),thickness= 4)
+            cv.circle(condensates, (int(row['centroid-1']), int(row['centroid-0'])), int(row['cond-radius']), (255,255,255), 2)
+            cv.circle(condensates, (int(row['droplet-y']), int(row['droplet-x'])), int(row['droplet_radius']), (0,255,0), 2)
+        else:
+            cond_props.drop(j, inplace = True)
+            print("WHATT" + str(j))
+
+    # plt.imshow(condensates)
+    # scalebar = ScaleBar(0.58, 'um')
+    # plt.gca().add_artist(scalebar)
+    # plt.title(("Condensates Temp = " + str(temp)))
+    # plt.show()
+
 
     fig, axes = plt.subplots(1,2, sharey = True)
-    axes[0].imshow(cond_img)
+    axes[0].imshow(condensates)
     axes[0].set_title("Condensates Temp = " + str(temp))
 
-    axes[1].imshow(cv_img)
+    axes[1].imshow(droplets)
     axes[1].set_title("Droplets Temp = %d" % (temp))
 
-    fig.suptitle('1.5 mM DNA')
+
+    fig.suptitle(conc +' mM DNA')
     fig.subplots_adjust(top=0.88)
-    plt.savefig("C:/Users/mborj/Documents/Rogers Lab/20220707-Hysteresis-heating-cleaned/20220707-Hysteresis-heating-cleaned/1.5mM Data CSV/FigureMatched%dC.png" % temp)
+    plt.savefig("C:/Users/mborj/Documents/Rogers Lab/20220707-Hysteresis-heating-cleaned/20220707-Hysteresis-heating-cleaned/" + conc + "mM Data CSV/FigureMatched%dC.png" % temp)
     plt.show()
 
-    cond_props.to_csv("C:/Users/mborj/Documents/Rogers Lab/20220707-Hysteresis-heating-cleaned/20220707-Hysteresis-heating-cleaned/1.5mM Data CSV/Matched%dC.csv" % temp)
+    plt.imshow(condensates)
+    plt.title("Labeled Condensates " + conc + "mM %dC" % temp)
+    plt.savefig("C:/Users/mborj/Documents/Rogers Lab/20220707-Hysteresis-heating-cleaned/20220707-Hysteresis-heating-cleaned/" + conc + "mM Data CSV/"+ conc + "mM-Labeled-Condensates%dC.png" % temp)
+    plt.show()
+
+    cond_props.to_csv("C:/Users/mborj/Documents/Rogers Lab/20220707-Hysteresis-heating-cleaned/20220707-Hysteresis-heating-cleaned/" + conc + "mM Data CSV/Matched%dC.csv" % temp)

@@ -4,6 +4,7 @@ Created on 2022/8/7
 
 This file reads data from the FIJI plugin called 3D manager. Data is read as a pandas DataFrame and plotted.
 For more information in segmenting 3d confocal images refer the following protocol:
+TODO Write this protocol
 https://docs.google.com/document/d/1ND0b4Q0BMJwMQk75DTJni6TjGzhjJKKuMhz1ZiWM7GY/edit
 
 Scientist notes:
