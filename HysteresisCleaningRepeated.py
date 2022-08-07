@@ -51,9 +51,9 @@ def showFig(figure, title = ""):
 #%%
 
 # General File Reading
-for i in range(5):
+for i in range(1):
     # Temperature readings start at 58C and go up to 66C
-    conc = "1.5"
+    conc = "1"
     temp = 58 + (2*i)
     path = "C:/Users/mborj/Documents/Rogers Lab/20220707-Hysteresis-heating-cleaned/20220707-Hysteresis-heating-cleaned/"
 
@@ -71,7 +71,7 @@ for i in range(5):
     condgauss = filters.gaussian(condensates, sigma = (sig-1))
 
     #Use a Canny edge detector to detected condensate edges
-    edges = feature.canny(condgauss, sigma = 0.2)
+    edges = feature.canny(condgauss, sigma = 0.5)
     fill_edges = ndi.binary_fill_holes(edges)
     fill_edges = remove_small_objects(fill_edges, min_size = 200)
 
@@ -80,12 +80,6 @@ for i in range(5):
     props = regionprops_table(cond_label, properties = ('area', 'centroid', 'orientation', 'axis_major_length', 'axis_minor_length'))
     cond_props = pd.DataFrame(props)
     cond_props.rename(columns={'area': 'condensate area'}, inplace = True)
-
-    #TODO Add more documentation (starting here)
-    # fig, axes = plt.subplots(1,2, sharey = True)
-    # axes[0].imshow(edges)
-    # axes[1].imshow(condgauss)
-    # plt.show()
 
     fill_edges = ~fill_edges
     cond_img = condgauss*(fill_edges)
@@ -127,15 +121,16 @@ for i in range(5):
     #     cv.circle(droplets, (j[0], j[1]), j[2], (0, 255, 0), 2)
     #     cv.circle(condensates, (j[0], j[1]), j[2], (0, 255, 0), 2)
 
+    # Delete condensates with area above 2000 pixels
     for index, row in cond_props.iterrows():
         if row['condensate area'] > 20000:
             cond_props.drop(index, inplace=True)
 
     for j, row in cond_props.iterrows():
         if(not math.isnan(row['droplet_radius'])):
-            cv.putText(condensates, str(j), (int(row['droplet-y']), int(row['droplet-x'])), cv.FONT_HERSHEY_SIMPLEX, 3, (0,0,0),thickness= 4)
-            cv.circle(condensates, (int(row['centroid-1']), int(row['centroid-0'])), int(row['cond-radius']), (255,255,255), 2)
-            cv.circle(condensates, (int(row['droplet-y']), int(row['droplet-x'])), int(row['droplet_radius']), (0,255,0), 2)
+            cv.putText(condensates, str(j), (int(row['droplet-y']), int(row['droplet-x'] - 40)), cv.FONT_HERSHEY_SIMPLEX, 3, (0,0,0),thickness= 4)
+            cv.circle(condensates, (int(row['centroid-1']), int(row['centroid-0'])), int(row['cond-radius']), (255,255,255), 5)
+            cv.circle(condensates, (int(row['droplet-y']), int(row['droplet-x'])), int(row['droplet_radius']), (50,255,0), 5)
         else:
             cond_props.drop(j, inplace = True)
             print("WHATT" + str(j))
