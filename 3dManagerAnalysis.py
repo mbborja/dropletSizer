@@ -15,11 +15,16 @@ Plotting histograms and scatter plots has become much easier using the defined m
 
 import pandas as pd
 import matplotlib.pyplot as plt
+import numpy as np
+from scipy.optimize import curve_fit
 
 df = pd.read_csv("C:/Users/mborj/Documents/Rogers Lab/Project Series22_Small/Project 22 Data.csv")
 df2 = pd.read_csv("C:/Users/mborj/Documents/Rogers Lab/Project Series019_large/Series019 Large 3d Measure.csv")
 df3 = pd.read_csv("C:/Users/mborj/Documents/Rogers Lab/Project Series016-Small/3dmeasure.csv")
 df4 = pd.read_csv("C:/Users/mborj/Documents/Rogers Lab/Project Series018-Large/measure3d.csv")
+
+def myExpFunc(x, a, b):
+    return a * np.power(x, b)
 
 #%%
 
@@ -52,6 +57,30 @@ ax = dfmix.plot.scatter(x = 'Ell_MajRad', y = '1 - c/a', c = 'Green')
 ax.set_xscale('log')
 ax.set_yscale('log')
 ax.set_xlabel(r'Ellipse Major Radius $(\mu m)$')
+
+newX = np.logspace(0, 2, base = 10)
+
+popt, pcov = curve_fit(myExpFunc, dfmix['Ell_MajRad'], dfmix["1 - c/a"])
+plt.plot(newX, myExpFunc(newX, *popt), 'r-',
+         label="({0:.3f}*x**{1:.3f})".format(*popt))
+ax.grid(visible='on')
+plt.legend(loc='lower right')
+
+plt.tight_layout()
+plt.show()
+
+#%%
+ax = dfmix.plot.scatter(x = 'Ell_MajRad', y = 'Vol (nano)', c = 'Red')
+ax.set_xscale('log')
+ax.set_yscale('log')
+ax.set_xlabel(r'Ellipse Major Radius $(\mu m)$')
+
+newX = np.logspace(0, 2, base = 10)
+popt, pcov = curve_fit(myExpFunc, dfmix['Ell_MajRad'], dfmix["Vol (nano)"])
+plt.plot(newX, myExpFunc(newX, *popt), 'r-',
+         label="({0:.3f}*x**{1:.3f})".format(*popt))
+ax.grid(visible = 'on')
+plt.legend(loc='lower right')
 plt.tight_layout()
 plt.show()
 
