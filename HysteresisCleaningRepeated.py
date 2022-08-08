@@ -20,6 +20,7 @@ Needs a cleanup
 import matplotlib.pyplot as plt
 import pandas as pd
 import math
+import DropletRadiusDetection
 from matplotlib_scalebar.scalebar import ScaleBar
 import skimage.filters.thresholding
 from skimage import filters, io, feature, data
@@ -51,9 +52,9 @@ def showFig(figure, title = ""):
 #%%
 
 # General File Reading
-for i in range(1):
+for i in range(5):
     # Temperature readings start at 58C and go up to 66C
-    conc = "1"
+    conc = "1.5"
     temp = 58 + (2*i)
     path = "C:/Users/mborj/Documents/Rogers Lab/20220707-Hysteresis-heating-cleaned/20220707-Hysteresis-heating-cleaned/"
 
@@ -116,24 +117,23 @@ for i in range(1):
     cond_props['temp'] = test_temp
     cond_props['concentration (mM)'] = test_conc
 
-    # for j in result[0, :]:
-    #     cv.circle(cv_img, (j[0], j[1]), j[2], (0, 255, 0), 2)
-    #     cv.circle(droplets, (j[0], j[1]), j[2], (0, 255, 0), 2)
-    #     cv.circle(condensates, (j[0], j[1]), j[2], (0, 255, 0), 2)
+    cond_props = DropletRadiusDetection.deleteLargeCondensates(cond_props, min_size=20000)
 
     # Delete condensates with area above 2000 pixels
     for index, row in cond_props.iterrows():
         if row['condensate area'] > 20000:
             cond_props.drop(index, inplace=True)
 
-    for j, row in cond_props.iterrows():
-        if(not math.isnan(row['droplet_radius'])):
-            cv.putText(condensates, str(j), (int(row['droplet-y']), int(row['droplet-x'] - 40)), cv.FONT_HERSHEY_SIMPLEX, 3, (0,0,0),thickness= 4)
-            cv.circle(condensates, (int(row['centroid-1']), int(row['centroid-0'])), int(row['cond-radius']), (255,255,255), 5)
-            cv.circle(condensates, (int(row['droplet-y']), int(row['droplet-x'])), int(row['droplet_radius']), (50,255,0), 5)
-        else:
-            cond_props.drop(j, inplace = True)
-            print("WHATT" + str(j))
+    condensates, cond_props = DropletRadiusDetection.encircleProps(condensates, cond_props)
+
+    # for j, row in cond_props.iterrows():
+    #     if(not math.isnan(row['droplet_radius'])):
+    #         cv.putText(condensates, str(j), (int(row['droplet-y']), int(row['droplet-x'] - 40)), cv.FONT_HERSHEY_SIMPLEX, 3, (0,0,0),thickness= 4)
+    #         cv.circle(condensates, (int(row['centroid-1']), int(row['centroid-0'])), int(row['cond-radius']), (255,255,255), 5)
+    #         cv.circle(condensates, (int(row['droplet-y']), int(row['droplet-x'])), int(row['droplet_radius']), (50,255,0), 5)
+    #     else:
+    #         cond_props.drop(j, inplace = True)
+    #         print("WHATT" + str(j))
 
     # plt.imshow(condensates)
     # scalebar = ScaleBar(0.58, 'um')
