@@ -18,10 +18,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy.optimize import curve_fit
 
-df = pd.read_csv("C:/Users/mborj/Documents/Rogers Lab/Project Series22_Small/Project 22 Data.csv")
-df2 = pd.read_csv("C:/Users/mborj/Documents/Rogers Lab/Project Series019_large/Series019 Large 3d Measure.csv")
-df3 = pd.read_csv("C:/Users/mborj/Documents/Rogers Lab/Project Series016-Small/3dmeasure.csv")
-df4 = pd.read_csv("C:/Users/mborj/Documents/Rogers Lab/Project Series018-Large/measure3d.csv")
+df = pd.read_csv("C:/Users/mborj/Documents/Rogers Lab/22-07-21 Rhodamine Experiments/Project Series22_Small/Project 22 Data.csv")
+df2 = pd.read_csv("C:/Users/mborj/Documents/Rogers Lab/22-07-21 Rhodamine Experiments/Project Series019_large/Series019 Large 3d Measure.csv")
+df3 = pd.read_csv("C:/Users/mborj/Documents/Rogers Lab/22-07-21 Rhodamine Experiments/Project Series016-Small/3dmeasure.csv")
+df4 = pd.read_csv("C:/Users/mborj/Documents/Rogers Lab/22-07-21 Rhodamine Experiments/Project Series018-Large/measure3d.csv")
 
 def myExpFunc(x, a, b):
     return a * np.power(x, b)
@@ -81,6 +81,23 @@ plt.plot(newX, myExpFunc(newX, *popt), 'r-',
          label="({0:.3f}*x**{1:.3f})".format(*popt))
 ax.grid(visible = 'on')
 plt.legend(loc='lower right')
+plt.tight_layout()
+plt.show()
+
+#%%
+
+ax = dfmix.plot.scatter(x = 'Ell_MajRad', y = 'Vol (unit)', c = 'Red')
+# ax.set_xscale('log')
+# ax.set_yscale('log')
+ax.set_xlabel(r'Ellipse Major Radius $(\mu m)$')
+ax.set_ylabel(r'Ellipse Volume $(\mu m^3)$')
+newX = np.logspace(0, 1.7, base = 10)
+popt, pcov = curve_fit(myExpFunc, dfmix['Ell_MajRad'], dfmix["Vol (unit)"])
+plt.plot(newX, myExpFunc(newX, *popt), 'r-',
+         label="({0:.3f}*x**{1:.3f})".format(*popt))
+plt.plot(newX, myExpFunc(newX,(4/3)*3.14159,3), 'Green', label =r"$\frac{4}{3}\pi x^3$")
+ax.grid(visible = 'on')
+plt.legend(loc='upper left')
 plt.tight_layout()
 plt.show()
 
