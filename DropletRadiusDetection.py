@@ -57,7 +57,7 @@ def showFig(figure, title = ""):
     :return:
     """
     plt.imshow(figure)
-    plt.title = title
+    plt.title(title)
     plt.show()
 
 def encircleProps(img, props):
