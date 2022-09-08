@@ -68,12 +68,11 @@ def encircleProps(img, props):
     :return: encircled image img
     """
     for j, row in props.iterrows():
-        if(not math.isnan(row['droplet_radius'])):
-            cv.putText(img, str(j), (int(row['droplet-y']), int(row['droplet-x'] - 40)), cv.FONT_HERSHEY_SIMPLEX, 3, (0,0,0),thickness= 4)
-            cv.circle(img, (int(row['centroid-1']), int(row['centroid-0'])), int(row['cond-radius']), (255,255,255), 5)
-            cv.circle(img, (int(row['droplet-y']), int(row['droplet-x'])), int(row['droplet_radius']), (50,255,0), 5)
+        if(not math.isnan(row['drop_radius'])):
+            cv.putText(img, str(j), (int(row['drop_x']), int(row['drop_y'] - 40)), cv.FONT_HERSHEY_SIMPLEX, 3, (0,0,0),thickness= 4)
+            cv.circle(img, (int(row['cond_x']), int(row['cond_y'])), int(row['cond_radius']), (255,255,255), 5)
+            cv.circle(img, (int(row['drop_x']), int(row['drop_y'])), int(row['drop_radius']), (50,255,0), 5)
         else:
-            print("swag")
             props.drop(j, inplace = True)
     return img, props
 

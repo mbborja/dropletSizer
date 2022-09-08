@@ -52,7 +52,7 @@ def showFig(figure, title = ""):
 #%%
 
 # General File Reading
-for i in range(5):
+for i in range(1):
     # Temperature readings start at 58C and go up to 66C
     conc = "1.5"
     temp = 58 + (2*i)
@@ -107,7 +107,7 @@ for i in range(5):
             if isContained(x,y,drop_x,drop_y,radius):
                 droplet_x[j] = drop_x
                 droplet_y[j] = drop_y
-                droplet_radius[j] = radius
+                droplet_radius[j] = radius*0.58
 
     cond_radius = np.sqrt(cond_props["condensate area"].apply(lambda x: float(x))/math.pi)
     cond_props['cond-radius'] = cond_radius
@@ -152,12 +152,12 @@ for i in range(5):
 
     fig.suptitle(conc +' mM DNA')
     fig.subplots_adjust(top=0.88)
-    plt.savefig("C:/Users/mborj/Documents/Rogers Lab/20220707-Hysteresis-heating-cleaned/20220707-Hysteresis-heating-cleaned/" + conc + "mM Data CSV/FigureMatched%dC.png" % temp)
+#    plt.savefig("C:/Users/mborj/Documents/Rogers Lab/20220707-Hysteresis-heating-cleaned/20220707-Hysteresis-heating-cleaned/" + conc + "mM Data CSV/FigureMatched%dC.png" % temp)
     plt.show()
 
     plt.imshow(condensates)
     plt.title("Labeled Condensates " + conc + "mM %dC" % temp)
-    plt.savefig("C:/Users/mborj/Documents/Rogers Lab/20220707-Hysteresis-heating-cleaned/20220707-Hysteresis-heating-cleaned/" + conc + "mM Data CSV/"+ conc + "mM-Labeled-Condensates%dC.png" % temp)
+#    plt.savefig("C:/Users/mborj/Documents/Rogers Lab/20220707-Hysteresis-heating-cleaned/20220707-Hysteresis-heating-cleaned/" + conc + "mM Data CSV/"+ conc + "mM-Labeled-Condensates%dC.png" % temp)
     plt.show()
 
-    cond_props.to_csv("C:/Users/mborj/Documents/Rogers Lab/20220707-Hysteresis-heating-cleaned/20220707-Hysteresis-heating-cleaned/" + conc + "mM Data CSV/Matched%dC.csv" % temp)
+#    cond_props.to_csv("C:/Users/mborj/Documents/Rogers Lab/20220707-Hysteresis-heating-cleaned/20220707-Hysteresis-heating-cleaned/" + conc + "mM Data CSV/Matched%dC.csv" % temp)
