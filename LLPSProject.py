@@ -42,8 +42,8 @@ from skimage import io
 import DropletRadiusDetection
 from DropletRadiusDetection import showFig
 
-path = "C:/Users/mborj/Documents/Rogers Lab/22-08-05 LLPS Data Analysis/Trial 5 0.1mM/"
-conc = "0.1mM"
+path = "C:/Users/mborj/Documents/Rogers Lab/22-08-05 LLPS Data Analysis/Trial 1 0.6mM/"
+conc = "0.6mM"
 files = (glob.glob(path + "*.tif"))
 finalcsv = pd.DataFrame()
 
@@ -126,7 +126,7 @@ for i in range (20,80):
 
         showFig(cv_img, title = str(temp) + "C")
 
-finalcsv.to_csv(path + conc + " WEEBO.csv")
+finalcsv.to_csv(path + conc + " Matched Final.csv")
         #
         #
         # detectionTests = []
